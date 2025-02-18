@@ -1,0 +1,76 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
+      - name: Install Dependencies
+        run: pnpm install
+        
+      - name: Build
+        run: pnpm run build
+        env:
+          CLOUDFLARE_API_TOKEN: snv6k2_Vd0VexL0987hYSrs4aowHUnI421iPtzlp
+          CLOUDFLARE_ACCOUNT_ID: d1fcd8dbbd35aec43e5499200f6baede
+          FEATHERLESS_API_KEY: rc_b6ccf4862833f54a75c2e85294df72086a9c94ef6054fd58dba5f81336c88b43
+          OPENAI_API_KEY: sk-svcacct-u1PDcisKxJPA9KhTfN38vSFFvwn425aK-V1Dd-TnHl0Kz4xBbtAdVO42RT1ttZ4fGT3BlbkFJ2JpwgkPQK4EPbnops1cHtytjtzlxZBMqNg2SapEbFiYi__05Ogv2NaBJobnRsBCmQA
+          ANTHROPIC_API_KEY: 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
+          OPEN_ROUTER_API_KEY: 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
+          GROQ_API_KEY: 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
+          HUGGINGFACE_API_KEY: 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
+          VITE_LOG_LEVEL: debug
+          DEFAULT_NUM_CTX: 32768
+          NODE_ENV: production
+          
+      - name: Install Wrangler
+        run: npm install -g wrangler
+          
+      - name: Create Cloudflare Pages Project
+        run: |
+          wrangler pages project create bolt-diy-v2 --production-branch main || true
+        env:
+          CLOUDFLARE_API_TOKEN: snv6k2_Vd0VexL0987hYSrs4aowHUnI421iPtzlp
+          CLOUDFLARE_ACCOUNT_ID: d1fcd8dbbd35aec43e5499200f6baede
+          
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: snv6k2_Vd0VexL0987hYSrs4aowHUnI421iPtzlp
+          accountId: d1fcd8dbbd35aec43e5499200f6baede
+          projectName: bolt-diy-v2
+          directory: build/client
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          wranglerVersion: '3'
+        env:
+          CLOUDFLARE_API_TOKEN: snv6k2_Vd0VexL0987hYSrs4aowHUnI421iPtzlp
+          CLOUDFLARE_ACCOUNT_ID: d1fcd8dbbd35aec43e5499200f6baede
+          FEATHERLESS_API_KEY: rc_b6ccf4862833f54a75c2e85294df72086a9c94ef6054fd58dba5f81336c88b43
+          OPENAI_API_KEY: sk-svcacct-u1PDcisKxJPA9KhTfN38vSFFvwn425aK-V1Dd-TnHl0Kz4xBbtAdVO42RT1ttZ4fGT3BlbkFJ2JpwgkPQK4EPbnops1cHtytjtzlxZBMqNg2SapEbFiYi__05Ogv2NaBJobnRsBCmQA
+          ANTHROPIC_API_KEY: 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
+          OPEN_ROUTER_API_KEY: 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
+          GROQ_API_KEY: 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
+          HUGGINGFACE_API_KEY: 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
+          NODE_ENV: production

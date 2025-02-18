@@ -1,0 +1,25 @@
+
+
+see .recursorrules1
+
+## implement README.md & CONTRIBUTING.md
+
+## Build & Deploy bolt.diy to coolify and to vercel and to github pages and to dockerhub and to cloudflare pages & workers
+
+## implement the following features:
+
+- featherless.ai integration
+- opencog atomspace integration
+
+# Basic configuration for production deployment
+VITE_LOG_LEVEL=debug
+DEFAULT_NUM_CTX=32768
+NODE_ENV=production
+
+# Base URLs for local providers (if needed)
+OLLAMA_API_BASE_URL=http://127.0.0.1:11434
+LMSTUDIO_API_BASE_URL=http://127.0.0.1:1234
+
+
+
+

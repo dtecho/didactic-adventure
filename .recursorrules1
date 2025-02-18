@@ -1,0 +1,49 @@
+{
+  "version": "1.0",
+  "project": "bolt.diy-v2",
+  "rules": {
+    "implementation": {
+      "workspace": "/r:/.cursor/bolt.diy-v2",
+      "persistence": {
+        "enabled": true,
+        "storage": "indexedDB",
+        "backupInterval": 300000
+      },
+      "docker": {
+        "ollama": {
+          "baseUrl": "http://host.docker.internal:11434",
+          "retryStrategy": {
+            "attempts": 3,
+            "backoff": "exponential"
+          }
+        }
+      }
+    },
+    "testing": {
+      "automated": {
+        "preCommit": ["pnpm test"],
+        "preDeploy": ["pnpm test:e2e"]
+      },
+      "environment": {
+        "browser": "chrome-canary",
+        "node": ">=18.0.0"
+      }
+    },
+    "deployment": {
+      "build": {
+        "command": "pnpm run build",
+        "environment": "production"
+      },
+      "targets": {
+        "local": {
+          "command": "pnpm run start",
+          "port": 3000
+        },
+        "docker": {
+          "compose": "docker-compose up app-dev",
+          "rebuild": "docker-compose up app-dev --build"
+        }
+      }
+    }
+  }
+}
